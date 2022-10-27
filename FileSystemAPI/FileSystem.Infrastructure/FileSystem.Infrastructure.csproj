@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FileSystem.Core\FileSystem.Core.csproj" />
+    <ProjectReference Include="..\FileSystem.Persistence\FileSystem.Persistence.csproj" />
   </ItemGroup>
 
 </Project>
