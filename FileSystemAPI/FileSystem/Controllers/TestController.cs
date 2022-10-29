@@ -17,14 +17,14 @@ namespace FileSystem.Controllers
 			_dbContext = dbContext;
 		}
 
-		[HttpGet(Name = "GetAllCustomerDirectories")]
-		public IEnumerable<DirectoryViewModel> GetAll(Guid customerId)
+		[HttpGet(Name = "GetAllCustomerContent")]
+		public IEnumerable<ContentViewModel> GetAll(Guid customerId)
 		{
-			var customerDirectories = _dbContext.Directories
+			var customerDirectories = _dbContext.Content
 				.Where(x => x.CustomerId == customerId)
 				.ToList();
 
-			var retVal = customerDirectories.Select(x => new DirectoryViewModel(x));
+			var retVal = customerDirectories.Select(x => new ContentViewModel(x));
 
 			return retVal;
 		}

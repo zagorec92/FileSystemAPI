@@ -40,7 +40,7 @@ namespace FileSystem
 			{
 				app.UseSwagger();
 				app.UseSwaggerUI();
-				await DataFactory.Seed(app.Services, args);
+				//await DataFactory.Seed(app.Services, args);
 			}
 
 			app.UseHttpsRedirection();
