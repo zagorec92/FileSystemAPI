@@ -1,10 +1,13 @@
 ﻿using FileSystem.Core.Entities;
 using Microsoft.EntityFrameworkCore;
+
 namespace FileSystem.Core.Persistence
 {
-	public class FileSystemDbContext : DbContext
+	public class FileSystemDbContext : DbContext, IContentOperationContext
 	{
-		public DbSet<Content> Content { get; set; }
+		private DbSet<Content> Content { get; set; }
+
+		IQueryable<Content> IContentOperationContext.Content => Content.AsNoTracking();
 
 		public FileSystemDbContext(DbContextOptions<FileSystemDbContext> options)
 			: base(options) { }
@@ -21,7 +24,7 @@ namespace FileSystem.Core.Persistence
 
 			modelBuilder.Entity<Content>()
 				.Property(x => x.Type)
-				.HasComment("Denotes whether an item is a file or a directory (0 - directory, 1 - file");
+				.HasComment("Denotes whether the item is a file or a directory (0 - directory, 1 - file");
 
 			modelBuilder.Entity<Content>()
 				.HasIndex(x => new { x.Path, x.CustomerId })
@@ -50,5 +53,11 @@ namespace FileSystem.Core.Persistence
 
 			return base.SaveChangesAsync(cancellationToken);
 		}
+
+		public void Remove(IEnumerable<Content> entities) => Content.RemoveRange(entities);
+		public void Update(IEnumerable<Content> entities) => Content.UpdateRange(entities);
+		public void Update(Content content) => Content.Update(content);
+		public async Task AddAsync(Content content, CancellationToken cancellationToken = default)
+			=> await Content.AddAsync(content, cancellationToken);
 	}
 }

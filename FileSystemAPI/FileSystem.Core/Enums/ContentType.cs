@@ -1,7 +1,8 @@
-namespace FileSystem.Core.Enums;
-
-public enum ContentType
+namespace FileSystem.Core.Enums
 {
-	Directory,
-	File
+	public enum ContentType : byte
+	{
+		Directory,
+		File
+	}
 }

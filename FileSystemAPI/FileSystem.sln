@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{145A0422-F38
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7331B72F-D1D3-4C20-99FD-977EFA6DDDC6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileSystem", "FileSystem\FileSystem.csproj", "{7B563A48-0095-4733-A7AD-0C7E717FE238}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileSystem.API", "FileSystem.API\FileSystem.API.csproj", "{7B563A48-0095-4733-A7AD-0C7E717FE238}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileSystem.UnitTest", "FileSystem.UnitTest\FileSystem.UnitTest.csproj", "{7481FF31-4A1D-4CC0-B98F-79D942DA803E}"
 EndProject
@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileSystem.Core", "FileSyst
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileSystem.Infrastructure", "FileSystem.Infrastructure\FileSystem.Infrastructure.csproj", "{14226C91-A779-48A2-B696-8572F5EF117C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileSystem.Persistence", "FileSystem.Persistence\FileSystem.Persistence.csproj", "{C3213EA7-7AA0-486B-B315-87D9F55273DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileSystem.Persistence", "FileSystem.Persistence\FileSystem.Persistence.csproj", "{C3213EA7-7AA0-486B-B315-87D9F55273DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

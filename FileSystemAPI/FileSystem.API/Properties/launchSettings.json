@@ -10,14 +10,14 @@
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7189;http://localhost:5189"
     },
-    "FileSystem_Seed": {
+    "FileSystem_WithGeneratedData": {
         "commandName": "Project",
         "launchBrowser": true,
         "launchUrl": "swagger",
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development"
         },
-        "commandLineArgs": "1",
+        "commandLineArgs": "100 150 100 1000",
         "dotnetRunMessages": true,
         "applicationUrl": "https://localhost:7189;http://localhost:5189"
     },
