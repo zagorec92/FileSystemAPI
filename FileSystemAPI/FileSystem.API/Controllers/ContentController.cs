@@ -35,10 +35,10 @@ namespace FileSystem.Controllers
 		/// If <paramref name="path"/> is empty, it is treated as a root directory path.
 		/// The <paramref name="path"/> argument matches everything after {<paramref name="customerId"/>}/ which is considered a valid relative url in this context.
 		/// </remarks>
-		/// <returns>The <see cref="OkObjectResult"/> containing a collection of <see cref="ContentViewModel"/> instances.</returns>
+		/// <returns>The <see cref="OkObjectResult"/> containing a collection of <see cref="ContentViewModelRich"/> instances.</returns>
 		[HttpGet("{*path}")]
-		[Produces(typeof(ContentViewModel))]
-		[ProducesResponseType(typeof(ContentViewModel), StatusCodes.Status200OK)]
+		[Produces(typeof(ContentViewModelRich))]
+		[ProducesResponseType(typeof(ContentViewModelRich), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -53,7 +53,7 @@ namespace FileSystem.Controllers
 			if (!content.Any())
 				return NotFound();
 
-			ContentViewModel item = new(content.Single());
+			ContentViewModelRich item = new(content.Single());
 			GenerateLinks(customerId, item);
 
 			return Ok(item);
@@ -64,7 +64,7 @@ namespace FileSystem.Controllers
 		/// </summary>
 		/// <param name="customerId">The <see cref="Guid"/> customer identifier.</param>
 		/// <param name="request">The <see cref="SaveContentRequestViewModel"/> instance containing the required data.</param>
-		/// <returns>The <see cref="CreatedResult"/> containing an <see cref="Uri"/> pointing to the new content and <see cref="ContentViewModelBase"/> instance.</returns>
+		/// <returns>The <see cref="CreatedResult"/> containing an <see cref="Uri"/> pointing to the new content and <see cref="ContentViewModel"/> instance.</returns>
 		[HttpPost]
 		public async Task<IActionResult> Save(
 			[FromRoute] Guid customerId,
@@ -73,7 +73,7 @@ namespace FileSystem.Controllers
 			var saveRequest = request.ToSaveContentRequest(customerId);
 			var content = await _contentService.Save(saveRequest);
 
-			return Created($"{customerId}/content{content.Path}", new ContentViewModelBase(content));
+			return Created($"{customerId}/content{content.Path}", new ContentViewModel(content));
 		}
 
 		/// <summary>

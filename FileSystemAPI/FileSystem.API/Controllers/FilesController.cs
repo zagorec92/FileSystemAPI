@@ -15,7 +15,7 @@ namespace FileSystem.Controllers
 	[Route("{customerId:guid}")]
 	[ApiController]
 	[Produces(MediaTypeNames.Application.Json)]
-	public class FilesController : ControllerBase
+	public class FilesController : ApiController
 	{
 		private readonly IContentService _contentService;
 
@@ -23,17 +23,18 @@ namespace FileSystem.Controllers
 		/// Creates a new instance of <see cref="FilesController"/> type.
 		/// </summary>
 		/// <param name="contentService">The injected <see cref="IContentService"/> instance.</param>
-		public FilesController(IContentService contentService) => _contentService = contentService;
+		public FilesController(IContentService contentService, LinkGenerator linkGenerator)
+			: base(linkGenerator) => _contentService = contentService;
 
 		/// <summary>
 		/// Gets the customer's file by an exact name.
 		/// </summary>
 		/// <param name="customerId">The <see cref="Guid"/> customer identifier.</param>
 		/// <param name="name">The <see cref="string"/> name of the file.</param>
-		/// <returns>The <see cref="OkObjectResult"/> containing a <see cref="ContentViewModelBase"/> instance.</returns>
+		/// <returns>The <see cref="OkObjectResult"/> containing a <see cref="ContentViewModel"/> instance.</returns>
 		[HttpGet("files")]
-		[Produces(typeof(ContentViewModelBase))]
-		[ProducesResponseType(typeof(ContentViewModelBase), StatusCodes.Status200OK)]
+		[Produces(typeof(ContentViewModel))]
+		[ProducesResponseType(typeof(ContentViewModel), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -47,19 +48,22 @@ namespace FileSystem.Controllers
 			if (file == null)
 				return NotFound();
 
-			return Ok(new ContentViewModelBase(file));
+			var decoratedFile = new ContentViewModel(file);
+			GenerateLinks(customerId, decoratedFile);
+
+			return Ok(decoratedFile);
 		}
 
 		/// <summary>
-		/// Gets the customer's file by an exact name relative to the parent directory.
+		/// Gets the customer's file by an exact name relative to the given directory.
 		/// </summary>
 		/// <param name="customerId">The <see cref="Guid"/> customer identifier.</param>
 		/// <param name="directoryId">The <see cref="Guid"/> directory identifier.</param>
 		/// <param name="name">The <see cref="string"/> name of the file.</param>
-		/// <returns>The <see cref="OkObjectResult"/> containing a <see cref="ContentViewModelBase"/> instance.</returns>
+		/// <returns>The <see cref="OkObjectResult"/> containing a <see cref="ContentViewModel"/> instance.</returns>
 		[HttpGet("{directoryId:guid}/files")]
-		[Produces(typeof(ContentViewModelBase))]
-		[ProducesResponseType(typeof(ContentViewModelBase), StatusCodes.Status200OK)]
+		[Produces(typeof(ContentViewModel))]
+		[ProducesResponseType(typeof(ContentViewModel), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -77,7 +81,10 @@ namespace FileSystem.Controllers
 			if (file == null)
 				return NotFound();
 
-			return Ok(new ContentViewModelBase(file));
+			var decoratedFile = new ContentViewModel(file);
+			GenerateLinks(customerId, decoratedFile);
+
+			return Ok(decoratedFile);
 		}
 
 		/// <summary>
@@ -120,7 +127,10 @@ namespace FileSystem.Controllers
 			if (!files.Any())
 				return NotFound();
 
-			return Ok(files.Select(x => new ContentViewModelSimple(x)).ToList());
+			var decoratedFiles = files.Select(x => new ContentViewModelSimple(x)).ToList();
+			decoratedFiles.ForEach(x => GenerateLinks(customerId, x));
+
+			return Ok(decoratedFiles);
 		}
 	}
 }

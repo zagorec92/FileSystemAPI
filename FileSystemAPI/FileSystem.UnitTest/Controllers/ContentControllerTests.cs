@@ -45,7 +45,21 @@ namespace FileSystem.UnitTest.Controllers
 			var result = await controller.Get(Guid.NewGuid(), string.Empty);
 
 			result.Should().BeOfType<OkObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status200OK);
-			result.As<OkObjectResult>().Value.Should().BeOfType<ContentViewModel>().And.NotBeNull();
+			result.As<OkObjectResult>().Value.Should().BeOfType<ContentViewModelRich>().And.NotBeNull();
+		}
+
+		[TestMethod]
+		public async Task Get_ByPath_HasItem_Should_Be_Decorated_With_Links()
+		{
+			_mockContentService
+				.Setup(x => x.Get(It.IsAny<SearchContentRequestByPath>()))
+				.ReturnsAsync(_mockData);
+
+			var controller = GetController();
+
+			var result = await controller.Get(Guid.NewGuid(), string.Empty);
+
+			result.As<OkObjectResult>().Value.As<ContentViewModelRich>().Links.Should().NotBeNull();
 		}
 
 		[TestMethod]
