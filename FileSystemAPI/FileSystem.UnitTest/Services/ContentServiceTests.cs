@@ -36,6 +36,11 @@ namespace FileSystem.UnitTest.Services
 				public const string Home = "4e2c6091-ca28-4155-b33c-6148247ee500";
 				public const string File_1 = "a48efaf5-5fbc-4594-9f38-8370577516cd";
 			}
+
+			public struct Customer_3
+			{
+				public const string Id = "4fda7ac7-f88b-4d24-b31b-5cb20a1b260d";
+			}
 		}
 
 		private readonly Mock<IContentOperationContext> _mockContext;
@@ -102,6 +107,20 @@ namespace FileSystem.UnitTest.Services
 
 			_mockData.Should().HaveCount(defaultCount + 1);
 			_mockData.FirstOrDefault(x => x.Id == Guid.Empty).Should().NotBeNull();
+		}
+
+		[TestMethod]
+		public async Task Save_Should_Add_Root()
+		{
+			IContentService service = GetServiceInstance();
+			Guid customerId = Guid.Parse(Guids.Customer_3.Id);
+			var request = new SaveContentRequest(customerId, null, Constants.RootDirectory, ContentType.Directory);
+			int defaultCount = _mockData.Count;
+
+			await service.Save(request);
+
+			_mockData.Should().HaveCount(defaultCount + 1);
+			_mockData.FirstOrDefault(x => x.CustomerId == customerId).Should().NotBeNull();
 		}
 
 		[TestMethod]

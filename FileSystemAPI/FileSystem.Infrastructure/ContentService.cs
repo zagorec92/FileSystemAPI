@@ -41,15 +41,26 @@ namespace FileSystem.Infrastructure
 
 		public async Task<Content> Save(SaveContentRequest request)
 		{
-			var searchRequest = new SearchContentRequestByIds(request.CustomerId, new() { request.ParentId });
-			Content parent = (await Get(searchRequest)).Single();
+			Content? parent = null;
+			if(request.Name == Constants.RootDirectory && !request.ParentId.HasValue)
+			{
+				SearchContentRequest searchRequest = new(request.CustomerId);
+				Content? root = (await Get(searchRequest))?.SingleOrDefault();
+				if (root != null)
+					throw new Exception("Should be validation exception");
+			}
+			else
+			{
+				SearchContentRequestByIds searchRequest = new(request.CustomerId, new() { request.ParentId!.Value });
+				parent = (await Get(searchRequest)).Single();
+			}
 
 			Content newContent = new()
 			{
 				CustomerId = request.CustomerId,
 				Name = request.Name,
-				ParentId = request.ParentId,
-				Path = parent.Path + "/" + request.Name,
+				ParentId = parent?.Id,
+				Path = (parent != null ? parent.Path + "/" : string.Empty) + request.Name,
 				Type = (byte)request.Type
 			};
 
@@ -139,6 +150,13 @@ namespace FileSystem.Infrastructure
 				query = query.Where(x => x.ParentId == null);
 			else
 				query = query.Where(x => x.Path == request.Path);
+
+			return await query.ToListAsync();
+		}
+
+		public async Task<IEnumerable<Content>> Get(SearchContentRequest request)
+		{
+			IQueryable<Content> query = ApplyBaseQueries(request);
 
 			return await query.ToListAsync();
 		}
