@@ -27,11 +27,11 @@ There are 5 launch profiles available:
 2. Run the app (_FileSystem_ launch profile is selected by default)
 #### Running with Docker-Compose
   1. Switch to docker-compose project
-  2. Update the connection string in [appsettings.Development.json](https://github.com/zagorec92/FileSystemAPI/blob/documentation/FileSystemAPI/FileSystem.API/appsettings.Development.json#L9)
+  2. Switch to docker db connection string in [appsettings.Development.json](https://github.com/zagorec92/FileSystemAPI/blob/master/FileSystemAPI/FileSystem.API/appsettings.Development.json#L10)
 #### Running with Docker
   1. Ensure Docker Desktop is installed
   2. Create and run [SQL server container instance](https://learn.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-ver16&pivots=cs1-cmd)
-      1. Update the connection string in [appsettings.Development.json](https://github.com/zagorec92/FileSystemAPI/blob/documentation/FileSystemAPI/FileSystem.API/appsettings.Development.json#L9)
+      1. Switch to docker db connection string in [appsettings.Development.json](https://github.com/zagorec92/FileSystemAPI/blob/master/FileSystemAPI/FileSystem.API/appsettings.Development.json#L10)
 #### Running with WSL
   1. Ensure you have WSL version 2 enabled and Ubuntu 20.04 distro installed
   2. Start the distro and
@@ -39,7 +39,7 @@ There are 5 launch profiles available:
       2. Install [VSDebugger](https://vsdebugger.azureedge.net/vsdbg-17-4-11017-1/vsdbg-linux-x64.tar.gz) tool
       3. Install [docker](https://docs.docker.com/engine/install/ubuntu/)
       4. Create and run [SQL server container instance](https://learn.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-ver16&pivots=cs1-cmd)
-          1. Update the connection string in [appsettings.Development.json](https://github.com/zagorec92/FileSystemAPI/blob/documentation/FileSystemAPI/FileSystem.API/appsettings.Development.json#L9)
+          1. Switch to docker db connection string in [appsettings.Development.json](https://github.com/zagorec92/FileSystemAPI/blob/master/FileSystemAPI/FileSystem.API/appsettings.Development.json#L10)
 
 ### Implementation
 #### Basics
