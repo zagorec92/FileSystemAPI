@@ -27,8 +27,8 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore .\FileSystem.sln
+      run: dotnet restore FileSystem.sln
     - name: Build
-      run: dotnet build .\FileSystemAPI.sln --no-restore
+      run: dotnet build FileSystemAPI.sln --no-restore
     - name: Test
-      run: dotnet test .\FileSystem.sln --no-build --verbosity normal
+      run: dotnet test FileSystem.sln --no-build --verbosity normal
