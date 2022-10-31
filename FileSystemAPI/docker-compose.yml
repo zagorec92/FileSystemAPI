@@ -5,7 +5,7 @@ services:
     image: "mcr.microsoft.com/mssql/server:2022-latest"
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=Test1234!
+      - SA_PASSWORD=[PASSWORD]
 
   filesystem.api:
     image: ${DOCKER_REGISTRY-}filesystemapi
