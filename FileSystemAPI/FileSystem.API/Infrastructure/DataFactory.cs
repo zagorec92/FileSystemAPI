@@ -15,7 +15,7 @@ namespace FileSystem.Infrastructure
 			var context = scope.ServiceProvider.GetRequiredService<FileSystemDbContext>();
 
 			var creatorService = context.Database.GetService<IRelationalDatabaseCreator>();
-			if (args.Length == 4 || !await creatorService?.ExistsAsync()!)
+			if ((args.Length == 4 || !await creatorService?.ExistsAsync()!) && context.Database.IsSqlServer())
 			{
 				if (args.Length == 4)
 					await context.Database.EnsureDeletedAsync();

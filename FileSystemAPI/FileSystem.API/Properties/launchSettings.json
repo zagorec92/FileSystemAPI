@@ -11,22 +11,32 @@
       "applicationUrl": "https://localhost:7189;http://localhost:5189"
     },
     "FileSystem_WithGeneratedData": {
-        "commandName": "Project",
-        "launchBrowser": true,
-        "launchUrl": "swagger",
-        "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Development"
-        },
-        "commandLineArgs": "100 150 100 1000",
-        "dotnetRunMessages": true,
-        "applicationUrl": "https://localhost:7189;http://localhost:5189"
+      "commandName": "Project",
+      "commandLineArgs": "100 150 100 1000",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7189;http://localhost:5189"
     },
     "Docker": {
-        "commandName": "Docker",
-        "launchBrowser": true,
-        "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
-        "publishAllPorts": true,
-        "useSSL": true
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+      "publishAllPorts": true,
+      "useSSL": true
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:7189/swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "https://localhost:7189;http://localhost:5189"
+      },
+      "distributionName": ""
     }
   },
   "$schema": "https://json.schemastore.org/launchsettings.json"
