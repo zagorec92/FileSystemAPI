@@ -66,6 +66,11 @@ namespace FileSystem.Controllers
 		/// <param name="request">The <see cref="SaveContentRequestViewModel"/> instance containing the required data.</param>
 		/// <returns>The <see cref="CreatedResult"/> containing an <see cref="Uri"/> pointing to the new content and <see cref="ContentViewModel"/> instance.</returns>
 		[HttpPost]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status409Conflict)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> Save(
 			[FromRoute] Guid customerId,
 			[FromBody] SaveContentRequestViewModel request)
@@ -91,6 +96,7 @@ namespace FileSystem.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status409Conflict)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> Update(
 			[FromRoute] Guid customerId,
