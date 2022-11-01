@@ -3,6 +3,7 @@ using FileSystem.Core.Entities;
 using FileSystem.Core.Enums;
 using FileSystem.Core.Models;
 using FileSystem.Core.Models.Requests;
+using FileSystem.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel;
@@ -26,7 +27,7 @@ namespace FileSystem.Infrastructure
 				?.SingleOrDefault();
 
 			if (content == null)
-				throw new Exception("Should be validation exception");
+				throw new NotFoundException(request.CustomerId, request.Id);
 
 			List<Content> itemsToDelete = new() { content };
 
@@ -47,7 +48,7 @@ namespace FileSystem.Infrastructure
 				SearchContentRequest searchRequest = new(request.CustomerId);
 				Content? root = (await Get(searchRequest))?.SingleOrDefault();
 				if (root != null)
-					throw new Exception("Should be validation exception");
+					throw new RootExistsException(request.CustomerId);
 			}
 			else
 			{
@@ -72,9 +73,9 @@ namespace FileSystem.Infrastructure
 
 		public async Task Update(UpdateContentRequest request)
 		{
-			Content? content = (await Get(new SearchContentRequestByIds(request.CustomerId, new() { request.Id!.Value })))?.SingleOrDefault();
+			Content? content = (await Get(new SearchContentRequestByIds(request.CustomerId, new() { request.Id })))?.SingleOrDefault();
 			if (content == null)
-				throw new Exception("Should be validation exception");
+				throw new NotFoundException(request.CustomerId, request.Id);
 
 			string oldPath = content.Path;
 
