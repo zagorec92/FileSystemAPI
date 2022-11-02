@@ -67,8 +67,8 @@ As mentioned, there is only one table that stores both directories and files.
 * **Modified** UNIX timestamp pat which the content was last modified
 * **[RowVersion](https://learn.microsoft.com/en-us/sql/t-sql/data-types/rowversion-transact-sql?view=sql-server-ver16)** unique binary value used in concurrency handling
 
-File content will not be stored in a database because this is not a viable solution for large scale file system services (depending on the database, for example, SQL server [stores the data on a separate disk location](https://learn.microsoft.com/en-us/sql/relational-databases/blob/filestream-sql-server?view=sql-server-ver16), not in the database file). So, a file content should be physically stored in an actual file system location, preferably not on the same location where the database is found. To enable this, an actual file system interaction needs to be added.  
-Directory structure is what you would expect, classic top-down hierarchy with a root directory:
+Idea is to not store file content in the database (database file) because that doesn't seem as a viable solution for large scale file system services (tbh, it depends on the database - for example, SQL server [stores the data in a separate disk location](https://learn.microsoft.com/en-us/sql/relational-databases/blob/filestream-sql-server?view=sql-server-ver16)). Anyway, file content should be physically stored somewhere else, preferably not in the same location where the database is found. To enable this, a file system interaction needs to be added.  
+Directory structure is exactly what you would expect, classic top-down hierarchy with a root directory:
 ```
 └── c145b03e-2597-4ad6-8a2f-d331905658ef
     └── Directory_1
@@ -78,4 +78,5 @@ Directory structure is what you would expect, classic top-down hierarchy with a 
 └── dbd9168b-da2a-4390-8113-e7096baa78a6
     └── Directory_1   
     └── Directory_2
+        └── Directory_2_1
 ```
