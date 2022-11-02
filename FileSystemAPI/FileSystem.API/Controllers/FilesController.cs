@@ -20,9 +20,10 @@ namespace FileSystem.Controllers
 		private readonly IContentService _contentService;
 
 		/// <summary>
-		/// Creates a new instance of <see cref="FilesController"/> type.
+		/// Creates a new <see cref="FilesController"/> instance.
 		/// </summary>
 		/// <param name="contentService">The injected <see cref="IContentService"/> instance.</param>
+		/// <param name="linkGenerator">The injected <see cref="LinkGenerator"/> instance.</param>
 		public FilesController(IContentService contentService, LinkGenerator linkGenerator)
 			: base(linkGenerator) => _contentService = contentService;
 
