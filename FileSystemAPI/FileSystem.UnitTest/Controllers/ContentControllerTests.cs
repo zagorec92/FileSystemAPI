@@ -81,7 +81,7 @@ namespace FileSystem.UnitTest.Controllers
 		{
 			_mockContentService
 				.Setup(x => x.Save(It.IsAny<SaveContentRequest>()))
-				.ReturnsAsync(new Content() { Path = "/Test" });
+				.ReturnsAsync(new Content() { Path = "Test" });
 
 			var controller = GetController();
 
@@ -89,7 +89,7 @@ namespace FileSystem.UnitTest.Controllers
 			var result = await controller.Save(testCustomerId, new(testCustomerId.ToString(), String.Empty, 1));
 
 			result.Should().BeOfType<CreatedResult>().Which.StatusCode.Should().Be(StatusCodes.Status201Created);
-			result.As<CreatedResult>().Location.Should().BeEquivalentTo($"{testCustomerId}/content/Test");
+			result.As<CreatedResult>().Location.Should().BeEquivalentTo($"{testCustomerId}/Test");
 		}
 
 		[TestMethod]
