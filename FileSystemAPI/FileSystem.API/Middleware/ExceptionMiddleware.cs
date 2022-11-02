@@ -14,21 +14,31 @@ namespace FileSystem.Middleware
 	{
 		struct LogTemplates
 		{
-			internal const string RootExists = "Root directory already exists. CustomerId {customerId}";
-			internal const string NotFound = "Content could not be found. CustomerId {customerId}, ContentId {contentId}.";
-			internal const string ConcurrencyViolation = "Content state has been changed since it was last retrieved. CustomerId: {customerId}, ContentId: {contentId}, ContentName: {contentName}";
+			internal const string RootExists = "Root directory already exists. CustomerId: {customerId}, RequestPath: {requestPath}.";
+			internal const string NotFound = "Content could not be found. CustomerId: {customerId}, ContentId: {contentId}, RequestPath: {requestPath}.";
+			internal const string ConcurrencyViolation = "Content state has been changed since it was last retrieved. CustomerId: {customerId}, ContentId: {contentId}, ContentName: {contentName}, RequestPath: {requestPath}.";
 			internal const string Unexpected = "Something went wrong.";
 		}
 
 		private readonly RequestDelegate _next;
-		private readonly ILogger _logger;
+		private readonly ILogger<ExceptionMiddleware> _logger;
 
-		public ExceptionMiddleware(RequestDelegate next, ILogger<Program> logger)
+		/// <summary>
+		/// Creates a new <see cref="ExceptionMiddleware"/> instance.
+		/// </summary>
+		/// <param name="next">The <see cref="RequestDelegate"/> function which processes HTTP request.</param>
+		/// <param name="logger">The <see cref="ILogger"/> instance.</param>
+		public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
 		{
 			_next = next;
 			_logger = logger;
 		}
 
+		/// <summary>
+		/// Invokes the middleware.
+		/// </summary>
+		/// <param name="httpContext">The <see cref="HttpContext"/> instance.</param>
+		/// <returns></returns>
 		public async Task InvokeAsync(HttpContext httpContext)
 		{
 			try
@@ -43,6 +53,7 @@ namespace FileSystem.Middleware
 
 		private async Task HandleException(HttpContext httpContext, Exception ex)
 		{
+			var requestpath = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{httpContext.Request.Path}{httpContext.Request.QueryString}";
 			var errorResponse = new ErrorResponseViewModel()
 			{
 				StatusCode = StatusCodes.Status500InternalServerError,
@@ -53,13 +64,13 @@ namespace FileSystem.Middleware
 			{
 				errorResponse.StatusCode = StatusCodes.Status404NotFound;
 				errorResponse.Message = nfe.Message;
-				_logger.LogWarning(nfe, LogTemplates.NotFound, nfe.CustomerId, nfe.ContentId);
+				_logger.LogWarning(nfe, LogTemplates.NotFound, nfe.CustomerId, nfe.ContentId, requestpath);
 			}
 			else if(ex is RootExistsException ree)
 			{
 				errorResponse.StatusCode = StatusCodes.Status400BadRequest;
 				errorResponse.Message = ree.Message;
-				_logger.LogWarning(ree, LogTemplates.RootExists, ree.CustomerId);
+				_logger.LogWarning(ree, LogTemplates.RootExists, ree.CustomerId, requestpath);
 			}
 			else if (ex is DbUpdateConcurrencyException duce)
 			{
@@ -67,7 +78,7 @@ namespace FileSystem.Middleware
 				errorResponse.Message = "Content state has been changed since it was last retrieved.";
 
 				var entity = (Content)duce.Entries[0].Entity;
-				_logger.LogError(duce, LogTemplates.ConcurrencyViolation, entity.CustomerId, entity.Id, entity.Name);
+				_logger.LogError(duce, LogTemplates.ConcurrencyViolation, entity.CustomerId, entity.Id, entity.Name, requestpath);
 			}
 
 			httpContext.Response.ContentType = MediaTypeNames.Application.Json;
