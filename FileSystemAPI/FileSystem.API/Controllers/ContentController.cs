@@ -19,7 +19,7 @@ namespace FileSystem.Controllers
 		private readonly IContentService _contentService;
 
 		/// <summary>
-		/// Creates a new instance of <see cref="ContentController"/> type.
+		/// Creates a new <see cref="ContentController"/> instance.
 		/// </summary>
 		/// <param name="contentService">The injected <see cref="IContentService"/> instance.</param>
 		/// <param name="linkGenerator">The injected <see cref="LinkGenerator"/> instance.</param>
@@ -77,8 +77,10 @@ namespace FileSystem.Controllers
 		{
 			var saveRequest = request.ToSaveContentRequest(customerId);
 			var content = await _contentService.Save(saveRequest);
+			var decoratedContent = new ContentViewModel(content);
+			GenerateLinks(customerId, decoratedContent);
 
-			return Created($"{customerId}/content{content.Path}", new ContentViewModel(content));
+			return Created($"{customerId}/{content.Path}", decoratedContent);
 		}
 
 		/// <summary>
