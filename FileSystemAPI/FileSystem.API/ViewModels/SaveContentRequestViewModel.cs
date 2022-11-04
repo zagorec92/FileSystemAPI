@@ -8,7 +8,7 @@ namespace FileSystem.API.ViewModels
 	{
 		public Guid? ParentId { get; set; }
 		public string Name { get; set; }
-		public byte Type { get; private set; }
+		public byte Type { get; set; }
 
 		public SaveContentRequestViewModel()
 		{
