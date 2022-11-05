@@ -1,6 +1,7 @@
 using FileSystem.API.ViewModels;
 using FileSystem.Core;
 using FileSystem.Core.Models.Requests;
+using FileSystem.Infrastructure.Exceptions;
 using FileSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -51,7 +52,7 @@ namespace FileSystem.Controllers
 			));
 
 			if (!content.Any())
-				return NotFound();
+				throw new NotFoundException(customerId, path);
 
 			ContentViewModelRich item = new(content.Single());
 			GenerateLinks(customerId, item);
