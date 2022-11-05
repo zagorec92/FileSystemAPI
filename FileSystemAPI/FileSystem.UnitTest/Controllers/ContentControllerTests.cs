@@ -1,7 +1,7 @@
-﻿using FileSystem.Controllers;
+﻿using FileSystem.API.ViewModels;
+using FileSystem.Controllers;
 using FileSystem.Core;
 using FileSystem.Core.Entities;
-using FileSystem.Core.Enums;
 using FileSystem.Core.Models.Requests;
 using FileSystem.ViewModels;
 using FluentAssertions;
@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Moq;
+using ContentType = FileSystem.Core.Enums.ContentType;
 
 namespace FileSystem.UnitTest.Controllers
 {
@@ -77,16 +78,24 @@ namespace FileSystem.UnitTest.Controllers
 		}
 
 		[TestMethod]
-		public async Task Save_Should_Return_201Created()
+		[DataRow(ContentType.Directory)]
+		[DataRow(ContentType.File)]
+		public async Task Save_Should_Return_201Created(ContentType contentType)
 		{
 			_mockContentService
 				.Setup(x => x.Save(It.IsAny<SaveContentRequest>()))
-				.ReturnsAsync(new Content() { Path = "Test" });
+				.ReturnsAsync(new Content() { Path = "Test", Type = (byte)contentType });
 
 			var controller = GetController();
 
 			Guid testCustomerId = Guid.NewGuid();
-			var result = await controller.Save(testCustomerId, new(testCustomerId.ToString(), String.Empty, 1));
+			var request = new SaveContentRequestViewModel()
+			{
+				Name = String.Empty,
+				ParentId = testCustomerId,
+				Type = contentType
+			};
+			var result = await controller.Save(testCustomerId, request);
 
 			result.Should().BeOfType<CreatedResult>().Which.StatusCode.Should().Be(StatusCodes.Status201Created);
 			result.As<CreatedResult>().Location.Should().BeEquivalentTo($"{testCustomerId}/Test");
@@ -103,7 +112,13 @@ namespace FileSystem.UnitTest.Controllers
 			Guid testCustomerId = Guid.NewGuid();
 			Guid id = Guid.NewGuid();
 			Guid parentId = Guid.NewGuid();
-			var result = await controller.Update(testCustomerId, id, new(parentId.ToString(), "test"));
+			var request = new UpdateContentRequestViewModel()
+			{
+				Name = String.Empty,
+				ParentId = parentId
+			};
+
+			var result = await controller.Update(testCustomerId, id, request);
 
 			result.Should().BeOfType<OkResult>().Which.StatusCode.Should().Be(StatusCodes.Status200OK);
 		}
