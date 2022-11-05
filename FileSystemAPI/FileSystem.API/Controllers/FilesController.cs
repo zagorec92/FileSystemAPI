@@ -2,6 +2,7 @@
 using FileSystem.Core.Enums;
 using FileSystem.Core.Models.Requests;
 using FileSystem.Infrastructure;
+using FileSystem.Infrastructure.Exceptions;
 using FileSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
@@ -47,7 +48,7 @@ namespace FileSystem.Controllers
 			}))?.SingleOrDefault();
 
 			if (file == null)
-				return NotFound();
+				throw new NotFoundException(customerId, name);
 
 			var decoratedFile = new ContentViewModel(file);
 			GenerateLinks(customerId, decoratedFile);
@@ -80,7 +81,7 @@ namespace FileSystem.Controllers
 			}))?.SingleOrDefault();
 
 			if (file == null)
-				return NotFound();
+				throw new NotFoundException(customerId, name);
 
 			var decoratedFile = new ContentViewModel(file);
 			GenerateLinks(customerId, decoratedFile);
@@ -126,7 +127,7 @@ namespace FileSystem.Controllers
 			var files = await _contentService.Get(searchRequest);
 
 			if (!files.Any())
-				return NotFound();
+				throw new NotFoundException(customerId, $"{directoryId?.ToString()}/{name}");
 
 			var decoratedFiles = files.Select(x => new ContentViewModelSimple(x)).ToList();
 			decoratedFiles.ForEach(x => GenerateLinks(customerId, x));

@@ -46,7 +46,7 @@ namespace FileSystem.Infrastructure
 			if(request.Name == Constants.RootDirectory && !request.ParentId.HasValue)
 			{
 				SearchContentRequest searchRequest = new(request.CustomerId);
-				Content? root = (await Get(searchRequest))?.SingleOrDefault();
+				Content? root = (await Get(searchRequest))?.FirstOrDefault();
 				if (root != null)
 					throw new RootExistsException(request.CustomerId);
 			}

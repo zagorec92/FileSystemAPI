@@ -3,6 +3,7 @@ using FileSystem.Controllers;
 using FileSystem.Core;
 using FileSystem.Core.Entities;
 using FileSystem.Core.Models.Requests;
+using FileSystem.Infrastructure.Exceptions;
 using FileSystem.ViewModels;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -47,34 +48,19 @@ namespace FileSystem.UnitTest.Controllers
 
 			result.Should().BeOfType<OkObjectResult>().Which.StatusCode.Should().Be(StatusCodes.Status200OK);
 			result.As<OkObjectResult>().Value.Should().BeOfType<ContentViewModelRich>().And.NotBeNull();
+			result.As<OkObjectResult>().Value.As<ContentViewModelRich>().Links.Should().NotBeNull().And.NotBeEmpty();
 		}
 
 		[TestMethod]
-		public async Task Get_ByPath_HasItem_Should_Be_Decorated_With_Links()
-		{
-			_mockContentService
-				.Setup(x => x.Get(It.IsAny<SearchContentRequestByPath>()))
-				.ReturnsAsync(_mockData);
-
-			var controller = GetController();
-
-			var result = await controller.Get(Guid.NewGuid(), string.Empty);
-
-			result.As<OkObjectResult>().Value.As<ContentViewModelRich>().Links.Should().NotBeNull();
-		}
-
-		[TestMethod]
-		public async Task Get_ByPath_NoItem_Should_Return_404NotFound()
+		public async Task Get_ByPath_NoItem_Should_Throw_NotFoundException()
 		{
 			_mockContentService
 				.Setup(x => x.Get(It.IsAny<SearchContentRequestByPath>()))
 				.ReturnsAsync(_mockData.Where(x => x.Id == Guid.NewGuid()));
 
-			var controller = GetController();
+			Func<Task<IActionResult>> action = () => GetController().Get(Guid.Empty, string.Empty);
 
-			var result = await controller.Get(Guid.Empty, string.Empty);
-
-			result.Should().BeOfType<NotFoundResult>().Which.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+			await action.Should().ThrowAsync<NotFoundException>();
 		}
 
 		[TestMethod]
@@ -99,6 +85,7 @@ namespace FileSystem.UnitTest.Controllers
 
 			result.Should().BeOfType<CreatedResult>().Which.StatusCode.Should().Be(StatusCodes.Status201Created);
 			result.As<CreatedResult>().Location.Should().BeEquivalentTo($"{testCustomerId}/Test");
+			result.As<CreatedResult>().Value.As<ContentViewModel>().Links.Should().NotBeNull().And.NotBeEmpty();
 		}
 
 		[TestMethod]

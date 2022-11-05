@@ -3,6 +3,7 @@ using FileSystem.Core;
 using FileSystem.Core.Entities;
 using FileSystem.Core.Enums;
 using FileSystem.Core.Models.Requests;
+using FileSystem.Infrastructure.Exceptions;
 using FileSystem.ViewModels;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -64,17 +65,16 @@ namespace FileSystem.UnitTest.Controllers
 		}
 
 		[TestMethod]
-		public async Task Get_ByName_NoItem_Should_Return_404NotFound()
+		public async Task Get_ByName_NoItem_Should_Throw_NotFoundException()
 		{
 			_mockContentService
 				.Setup(x => x.Get(It.IsAny<SearchContentRequestByName>()))
 				.ReturnsAsync(_mockData.Where(x => x.Id == Guid.NewGuid()));
 
-			var controller = GetController();
+			Func<Task<IActionResult>> action = () => GetController().Get(Guid.Empty, string.Empty);
 
-			var result = await controller.Get(Guid.Empty, string.Empty);
+			await action.Should().ThrowAsync<NotFoundException>();
 
-			result.Should().BeOfType<NotFoundResult>().Which.StatusCode.Should().Be(StatusCodes.Status404NotFound);
 		}
 
 		[TestMethod]
@@ -107,17 +107,15 @@ namespace FileSystem.UnitTest.Controllers
 		}
 
 		[TestMethod]
-		public async Task Get_ByDirectoryAndName_NoItem_Should_Return_404NotFound()
+		public async Task Get_ByDirectoryAndName_NoItem_Should_Throw_NotFoundException()
 		{
 			_mockContentService
 				.Setup(x => x.Get(It.IsAny<SearchContentRequestByName>()))
 				.ReturnsAsync(_mockData.Where(x => x.Id == Guid.NewGuid()));
 
-			var controller = GetController();
+			Func<Task<IActionResult>> action = () => GetController().GetByParent(Guid.Empty, Guid.Empty, string.Empty);
 
-			var result = await controller.GetByParent(Guid.Empty, Guid.Empty, string.Empty);
-
-			result.Should().BeOfType<NotFoundResult>().Which.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+			await action.Should().ThrowAsync<NotFoundException>();
 		}
 
 		[TestMethod]
@@ -151,17 +149,15 @@ namespace FileSystem.UnitTest.Controllers
 		}
 
 		[TestMethod]
-		public async Task Search_NoItem_Should_Return_404NotFound()
+		public async Task Search_NoItem_Should_Throw_NotFoundException()
 		{
 			_mockContentService
 				.Setup(x => x.Get(It.IsAny<SearchContentRequestByName>()))
 				.ReturnsAsync(_mockData.Where(x => x.Id == Guid.NewGuid()));
 
-			var controller = GetController();
+			Func<Task<IActionResult>> action = () => GetController().Search(Guid.Empty, string.Empty, Guid.Empty, default);
 
-			var result = await controller.Search(Guid.Empty, string.Empty, Guid.Empty, default);
-
-			result.Should().BeOfType<NotFoundResult>().Which.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+			await action.Should().ThrowAsync<NotFoundException>();
 		}
 
 		private FilesController GetController()
