@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - master
-      - setup/*
       - feature/*
       - release/*
       - hotfix/*
@@ -25,7 +24,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
     - name: Restore dependencies
       run: dotnet restore FileSystem.sln
     - name: Build
