@@ -1,5 +1,5 @@
 # FileSystemAPI
-[![.NET](https://github.com/zagorec92/FileSystemAPI/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/zagorec92/FileSystemAPI/actions/workflows/dotnet.yml)
+[![.NET Linux](https://github.com/zagorec92/FileSystemAPI/actions/workflows/dotnet.yml/badge.svg)](https://github.com/zagorec92/FileSystemAPI/actions/workflows/dotnet.yml)
 
 ### Overview
 FileSystemAPI is an attempt to create a fully RESTful API for browser based file system services.  
