@@ -1,6 +1,5 @@
 ﻿namespace FileSystem.Infrastructure.Exceptions
 {
-
 	public class NotFoundException : Exception
 	{
 		public Guid CustomerId { get; set; }
