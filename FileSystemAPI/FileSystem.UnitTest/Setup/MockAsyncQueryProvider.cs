@@ -14,7 +14,7 @@ namespace FileSystem.UnitTest.Setup
 		public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
 			=> new MockAsyncEnumerable<TElement>(expression);
 
-		public object Execute(Expression expression) => _inner.Execute(expression);
+		public object? Execute(Expression expression) => _inner.Execute(expression);
 
 		public TResult Execute<TResult>(Expression expression) => _inner.Execute<TResult>(expression);
 
