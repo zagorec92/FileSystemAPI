@@ -3,7 +3,7 @@
 
 ### Overview
 FileSystemAPI is an attempt to create a fully RESTful API for browser based file system services.
-It is powered by .NET 8 and EF Core 6 and it supports basic operations on files and directories:
+It is powered by .NET 8 and EF Core 8 and it supports basic operations on files and directories:
 * Read
 * Write
 * Update
@@ -23,7 +23,7 @@ There are 5 launch profiles available:
 * **Docker** profile
 * **WSL** profile
 #### Running with FileSystem/FileSystem_WithGeneratedData
-1. Open up an IDE of your liking (Visual Studio >= 2022 or VS Code with all the packages needed for building and running the app)
+1. Open up an IDE of your liking (Visual Studio >= 2022, VS Code or Rider with all the packages needed for building and running the app)
 2. Run the app (_FileSystem_ launch profile is selected by default)
 #### Running with Docker-Compose
   1. Switch to docker-compose project
