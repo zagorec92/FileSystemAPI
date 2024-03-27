@@ -3,7 +3,9 @@ using FileSystem.Core.Entities;
 using FileSystem.Core.Enums;
 using FileSystem.Core.Models;
 using FileSystem.Core.Models.Requests;
+using FileSystem.Infrastructure.Enums;
 using FileSystem.Infrastructure.Exceptions;
+using FileSystem.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel;
@@ -12,6 +14,8 @@ namespace FileSystem.Infrastructure
 {
 	public class ContentService : IContentService
 	{
+		private const string LoggingTemplate = "CustomerId: {CustomerId}, ContentId: {ContentId}";
+
 		private readonly IContentOperationContext _context;
 		private readonly ILogger<ContentService> _logger;
 
@@ -29,7 +33,7 @@ namespace FileSystem.Infrastructure
 			if (content == null)
 				throw new NotFoundException(request.CustomerId, request.Id);
 
-			List<Content> itemsToDelete = new() { content };
+			List<Content> itemsToDelete = [content];
 
 			var descendants = await GetDescendants(content.CustomerId, content.Id, content.Path);
 			if (descendants.Any())
@@ -38,6 +42,8 @@ namespace FileSystem.Infrastructure
 			_context.Remove(itemsToDelete);
 
 			await _context.SaveChangesAsync();
+
+			_logger.LogInformation(LogEvent.ContentDeleted.ToEventId(), LoggingTemplate, request.CustomerId, content.Id);
 		}
 
 		public async Task<Content> Save(SaveContentRequest request)
@@ -52,8 +58,8 @@ namespace FileSystem.Infrastructure
 			}
 			else
 			{
-				SearchContentRequestByIds searchRequest = new(request.CustomerId, new() { request.ParentId!.Value });
-				parent = (await Get(searchRequest)).Single();
+				SearchContentRequestByIds searchRequest = new(request.CustomerId, [request.ParentId!.Value]);
+				parent = (await Get(searchRequest)).SingleOrDefault() ?? throw new NotFoundException(request.CustomerId, request.ParentId!.Value);
 			}
 
 			Content newContent = new()
@@ -68,23 +74,25 @@ namespace FileSystem.Infrastructure
 			await _context.AddAsync(newContent);
 			await _context.SaveChangesAsync();
 
+			_logger.LogInformation(LogEvent.ContentAdded.ToEventId(), LoggingTemplate, request.CustomerId, newContent.Id);
+
 			return newContent;
 		}
 
 		public async Task Update(UpdateContentRequest request)
 		{
-			Content? content = (await Get(new SearchContentRequestByIds(request.CustomerId, new() { request.Id })))?.SingleOrDefault();
+			Content? content = (await Get(new SearchContentRequestByIds(request.CustomerId, [request.Id])))?.SingleOrDefault();
 			if (content == null)
 				throw new NotFoundException(request.CustomerId, request.Id);
 
 			string oldPath = content.Path;
 
-			if (content.ParentId != request.ParentId)
+			if (request.ParentId != Guid.Empty && request.ParentId != content.ParentId)
 			{
-				IEnumerable<Content> oldNewParents = await Get(new SearchContentRequestByIds(request.CustomerId, new() { content.ParentId!.Value, request.ParentId }));
+				IEnumerable<Content> combinedParents = await Get(new SearchContentRequestByIds(request.CustomerId, [content.ParentId!.Value, request.ParentId]));
 
-				Content oldParent = oldNewParents.Single(x => x.Id == content.ParentId);
-				Content newParent = oldNewParents.Single(x => x.Id == request.ParentId);
+				Content oldParent = combinedParents.Single(x => x.Id == content.ParentId);
+				Content newParent = combinedParents.Single(x => x.Id == request.ParentId);
 
 				content.ParentId = request.ParentId;
 				content.Path = content.Path.Replace(oldParent.Path, newParent.Path);
@@ -113,6 +121,8 @@ namespace FileSystem.Infrastructure
 			_context.Update(content);
 
 			await _context.SaveChangesAsync();
+
+			_logger.LogInformation(LogEvent.ContentModified.ToEventId(), LoggingTemplate, request.CustomerId, request.Id);
 		}
 
 		public async Task<IEnumerable<Content>> Get(SearchContentRequestByName request)
@@ -135,10 +145,9 @@ namespace FileSystem.Infrastructure
 		{
 			IQueryable<Content> query = ApplyBaseQueries(request);
 
-			if (request.Ids?.Count == 1)
-				query = query.Where(x => x.Id == request.Ids.First());
-			else
-				query = query.Where(x => request.Ids!.Contains(x.Id));
+			query = request.Ids?.Count == 1
+				? query.Where(x => x.Id == request.Ids.First())
+				: query.Where(x => request.Ids!.Contains(x.Id));
 
 			return await query.ToListAsync();
 		}
@@ -147,10 +156,9 @@ namespace FileSystem.Infrastructure
 		{
 			IQueryable<Content> query = ApplyBaseQueries(request);
 
-			if (request.IsRoot)
-				query = query.Where(x => x.ParentId == null);
-			else
-				query = query.Where(x => x.Path == request.Path);
+			query = request.IsRoot
+				? query.Where(x => x.ParentId == null)
+				: query.Where(x => x.Path == request.Path);
 
 			return await query.ToListAsync();
 		}
